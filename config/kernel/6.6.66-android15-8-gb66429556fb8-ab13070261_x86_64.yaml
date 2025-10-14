@@ -1,0 +1,19 @@
+arch: x86_64
+mem_range:
+  begin: 18446744071293632512
+  end: 18446744073441116160
+name: 6.6.66-android15-8-gb66429556fb8-ab13070261_x86_64
+offset:
+  selinux: 43511224
+  swapper: 37803392
+sizeof:
+  address: 8
+  enforce: 1
+task:
+  offset:
+    comm: 2032
+    creds: 2016
+    init: 38084008
+    parent: 1512
+    pid: 1496
+    tasklist: 1296
