@@ -137,19 +137,28 @@ class Avd:
         return int(pids[0]) if len(pids) > 0 else None
 
     def overwrite_credentials(self, pid):
+        # This will not work if the kernel is compiled with randomize_struct
+        # In order to keep the retrocompatibility, we can just check if there 
+        # is the new "init_cred" offset.
+        # If this is present, then instead of overwriting the data in the structure
+        # we can just change the pointer in the task_struct to init_cred
         address = self.find_process(pid) + self.kernel.config.task.offset.creds
-        cmd = [f"x/a {address}", "set $addr = $__"]
+        if self.kernel.config.task.offset.init != None:
+            cmd = ["set {{unsigned long long}}{} = {}".format(address, self.kernel.config.task.offset.init + self.kernel.base_address)]
+            print(cmd)
+        else:
+            cmd = [f"x/a {address}", "set $addr = $__"]
 
-        for offset in Avd._CAPABILITIES_OFFSETS:
-            cmd.append(
-                "set *(unsigned int*) ($addr + {}) = {}".format(offset, 0xFFFFFFFF)
-            )
+            for offset in Avd._CAPABILITIES_OFFSETS:
+                cmd.append(
+                    "set *(unsigned int*) ($addr + {}) = {}".format(offset, 0xFFFFFFFF)
+                )
 
-        for offset in Avd._IDS_OFFSETS:
-            cmd.append(
-                "set *(unsigned int*) ($addr + {}) = {}".format(offset, 0x00000000)
-            )
-
+            for offset in Avd._IDS_OFFSETS:
+                cmd.append(
+                    "set *(unsigned int*) ($addr + {}) = {}".format(offset, 0x00000000)
+                )
+        
         info(f"Overwriting process [{pid}] credentials")
 
         self.kernel.gdb.execute("\n".join(cmd))

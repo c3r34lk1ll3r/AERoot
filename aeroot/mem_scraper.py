@@ -97,12 +97,14 @@ def forensic(options):
         offset = {}
         swapper=off['swapper']
         init_task = swapper + _base_address
+        debug("Init_task address: "+hex(init_task))
         comm_matcher = (
         "python", 
         "import struct",
         "import re",
         "init_task = {}",
         "mem = gdb.selected_inferior().read_memory(init_task, 8192)",
+        "comm=0",
         "for match in re.finditer(b\"swapper\",mem):",
         "   comm=match.start()",
         "   break",
@@ -112,6 +114,9 @@ def forensic(options):
         result = gdb.execute(cmd)
         offset_comm = int(result[0]['payload'][1:])
         debug("Retrieved COMM offset:"+str(offset_comm))
+        if offset_comm == 0:
+            info("Failed")
+            return
         offset['comm'] = offset_comm
         task_matcher = (
         "python",
@@ -237,6 +242,7 @@ def forensic(options):
         "   if addr_dict[i] == 6: # 6 because creds are stored in two point, real_creds and creds, we need two offset?",
         "       index = 0",
         "       # Also storing init_creds can be useful",
+        "       print(\"#\"+str(i))",
         "       while index < 8192:",
         "           test_addr = int.from_bytes(bytes(mem[index : index+ps]), 'little')",
         "           index+=ps",
@@ -246,10 +252,13 @@ def forensic(options):
         "end")
         cmd = "\n".join(creds_matcher).format(init_task)
         result = gdb.execute(cmd)
-        offset_cred = int(result[0]['payload'][1:])
+        print(result)
+        offset_init = int(result[0]['payload'][1:], 16) - _base_address
+        offset_cred = int(result[1]['payload'][1:])
         debug("Retrieved CRED offset:"+str(offset_cred))
+        debug("Retrieved INITCREDS offset:"+str(offset_init))
         offset['creds'] = offset_cred
-
+        offset['init']  = offset_init
         configuration['task'] = {'offset':offset}
         root_path = Path(Path(__file__).resolve().parent.parent, "config", "kernel", uname+'.yaml')
 
