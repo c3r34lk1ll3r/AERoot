@@ -8,7 +8,7 @@ import sys
 from aeroot import __version__
 from aeroot.aeroot import AERoot, Mode, ProcessNotRunningError, AERootError
 from aeroot.util import Logger, error, info, title, EXIT_ERR
-
+from aeroot import mem_scraper
 
 def handle_cmd_line() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -24,7 +24,7 @@ def handle_cmd_line() -> argparse.Namespace:
     )
     parser.add_argument("--host", default="127.0.0.1", help="specify adb host")
     parser.add_argument("--port", "-p", type=int, default=5037, help="specify adb port")
-
+    parser.add_argument("--mem_scrape", help="try to detect offset using heuristic and create yaml file")
     # Mode [pid|name|daemon]
     subparsers = parser.add_subparsers()
 
@@ -61,9 +61,11 @@ def main():
     Logger.init(options)
 
     title("AERoot (Android Emulator ROOTing system) v. {}".format(__version__))
-
+    
+    if options.mem_scrape != None:
+        mem_scraper.forensic(options)
+        return
     aeroot = AERoot(options)
-
     try:
         aeroot.do_root()
     except AERootError as err:
