@@ -2,3 +2,4 @@ pure-python-adb
 pygdbmi>=0.9.0.3
 colorama
 pyyaml
+git+https://github.com/marin-m/vmlinux-to-elf

@@ -116,8 +116,7 @@ class GdbHelper:
 
     def find(self, query: str) -> List[int]:
         addresses = []
-        response = self.gdb.write("find %s" % query, timeout_sec=180)
-
+        response = self.gdb.write("find %s" % query)
         for subset in response:
             payload = subset.get("payload")
 
