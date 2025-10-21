@@ -219,6 +219,9 @@ def forensic(options):
         ## Sizeof
         if arch == "x86_64":
             sizeof = {'address':8, 'enforce':1}
+        if arch == "i686":
+            sizeof = {'address': 8, 'enforce':1}
+            arch = "x86_64"
         configuration = {'name':uname, 'arch':arch, 'sizeof':sizeof}
         off = {}
         with open(options.mem_scrape, 'rb') as kernel_bin:

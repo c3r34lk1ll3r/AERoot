@@ -40,14 +40,15 @@
 | 5.10.66-android12-9-00041-gfa9c9074531e-ab7914766  |        | ✓      | 12.0                         |
 | 5.10.102-android13-0-00549-g255b30f804ac-ab8238117 | ✓      | ✓      | 13.0 + 13.0 (TV)             |
 | 5.10.107-android13-2-00451-g7ba447d0399b-ab8409457 |        | ✓      | 13.0                         |
-| 5.15.32-android13-3-00067-g7b5e736d7c63-ab8474665  |        | ✓      | 13.0                         |
-| 5.15.41-android13-6-02245-g158384f20d1e-ab8610100  |        | ✓      | 13.0                         |
 | 5.15.41-android13-8-00205-gf1bf82c3dacd-ab8747247  |        | ✓      | 13.0                         |
 | 5.15.41-android13-8-00055-g4f5025129fe8-ab8949913  |        | ✓      | 13.0                         |
 | 5.15.83-android14-5-00138-g5e28b848962c-ab9412825  |        | ✓      | 14.0                         |
 | 6.1.12-android14-0-00356-g116e1532b95d-ab9618665   |        | ✓      | 14.0                         |
 | 6.1.21-android14-3-01811-g9e35a21ec03f-ab9850788   |        | ✓      | 14.0                         |
 | 6.1.23-android14-4-00257-g7e35917775b8-ab9964412   |        | ✓      | 14.0                         |
+| 6.1.84-android14-11-gf3437db87063-ab12109370       |        | ✓      | 14.0                         |
+| 6.12.38-android16-5-gbb9513914902-ab13996879       |        | ✓      | 16.0                         |
+| 6.6.66-android15-8-gb66429556fb8-ab13070261        |        | ✓      | 15.0                         |
 
 # Requirements
 
@@ -133,8 +134,16 @@ Then run **aeroot** by choosing the mode among:
 ## Usage
 
 ```console
-aeroot [-h] [--verbose | --quiet] [--device DEVICE] [--host HOST] [--port PORT] {name,pid,daemon} ...
+aeroot [-h] [--verbose | --quiet] [--device DEVICE] [--mem_scrape <PATH_TO_KERNEL>] [--host HOST] [--port PORT] {name,pid,daemon} ...
 ```
+
+## Detecting new configuration
+The --mem_scrape <PATH> option enables automated memory offset detection and configuration file generation for new kernel setups.  The main idea is to search for common pattern in memory in order
+to find the offset for unknown kernel. 
+
+The <PATH> options is the path where the kernel is stored. It is possible to detect it reading the startup of emulator.
+
+The created new configuration file is stored in the config directory. Note that using that option, the ``rooting'' behaviour is disabled, indeed you need two runs to root the emulator.
 
 ## Examples
 
@@ -162,6 +171,10 @@ aeroot daemon
 
 > Gives the root privileges to the ADB daemon
 
+### *mem_scrape* mode example
+```console
+aeroot --mem_scrape ~/Android/Sdk/system-images/android-36/android-tv/x86/kernel-ranchu-64
+```
 ## Additional options
 
 You can find additional options by checking the help of the tool: `aeroot -h`
